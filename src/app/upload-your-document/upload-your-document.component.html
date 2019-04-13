@@ -1,0 +1,4 @@
+<section [hidden]="!hiddenCamera"fxLayout="row" fxLayoutAlign="center center">
+  <button mat-raised-button color="primary" (click)="openCamera()">Continuar</button>
+</section>
+<app-camera [hidden]="hiddenCamera" #appCamera></app-camera>
