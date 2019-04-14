@@ -129,27 +129,30 @@ export class CameraComponent implements OnInit {
 
   confirmSnapshot(): void{
     let container = document.getElementById('vid_container')
-    let overlay = document.getElementById('video_overlay');
+    let overlay = document.getElementById('overlay');
     let canvasResult = document.createElement('canvas');
     canvasResult.className = 'dni';
 
     /* let width = overlay.offsetWidth;
     let height = overlay.offsetHeight; */
-    console.log('video: '+this.video+' - '+this.video.videoWidth)
 
-    let aspect = this.video.videoHeight / this.video.videoWidth;
+    /* let aspect = this.video.videoHeight / this.video.videoWidth;
     let width = this.video.videoWidth - 100;   // or use height
-    let height = Math.round(width * aspect);
-    //console.log('OVERLAY WIDTH: '+width+' OVERLAY HEIGHT: '+height);
+    let height = Math.round(width * aspect); */
+
+    const width = this.video.videoWidth*0.8;
+    const height = this.video.videoHeight*0.35;
+
+    console.log('width: '+width+' height: '+height);
 
     canvasResult.width = width;
     canvasResult.height = height;
 
-    /* let left = overlay.offsetLeft - container.offsetLeft;
-    let top =  overlay.offsetTop - container.offsetTop; */
+    /* let left = 50;
+    let top =  this.video.videoHeight/3; */
 
-    let left = 50;
-    let top =  this.video.videoHeight/3;
+    const left = this.video.videoWidth*0.08;
+    const top = this.video.videoHeight*0.35;
 
     console.log('LEFT: '+left+' TOP: '+top);
 
