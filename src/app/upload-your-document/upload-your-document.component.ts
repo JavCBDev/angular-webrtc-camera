@@ -5,7 +5,7 @@ import { CameraComponent } from '../camera/camera.component';
 @Component({
   selector: 'app-upload-your-document',
   templateUrl: './upload-your-document.component.html',
-  styleUrls: ['./upload-your-document.component.css']
+  styleUrls: ['./upload-your-document.component.scss']
 })
 export class UploadYourDocumentComponent implements OnInit {
 

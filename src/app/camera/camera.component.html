@@ -1,14 +1,24 @@
-<div id="container">
+<!-- <div id="container">
   <div id="vid_container">
     <canvas id="canvas"></canvas>
     <video id="video" autoplay playsinline></video>
     <div id="video_overlay"></div>
   </div>
   <div id="gui_controls">
-    <!-- <button id="switchCameraButton" name="switch Camera" type="button" aria-pressed="false"></button> -->
     <button mat-button color="accent" (click)="clearCanvas()">RETOMAR</button>
     <button id="takePhotoButton" class="shot" name="take Photo" type="button" [hidden]="viewingSnapshot"></button>
     <button mat-button color="accent" (click)="useDNIMedia()">USAR</button>
-    <!-- <button id="toggleFullScreenButton" name="toggle FullScreen" type="button" aria-pressed="false"></button> -->
   </div>
-</div>
+</div> -->
+
+<section id="camera-container">
+  <section class="camera-stream">
+    <canvas id="canvas"></canvas>
+    <video id="video" autoplay playsinline></video>
+  </section>
+  <section class="camera-controls" fxLayout="row" fxLayoutAlign="space-around center">
+    <button mat-button color="accent" (click)="clearSnapshot()">RETOMAR</button>
+    <button type="button" class="snapshot" [hidden]="viewingSnapshot" (click)="takeSnapshot()"></button>
+    <button mat-button color="accent" (click)="confirmSnapshot()">USAR</button>
+  </section>
+</section>
