@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 
 import DetectRTC from 'detectrtc';
 
@@ -9,12 +9,13 @@ import DetectRTC from 'detectrtc';
 })
 export class CameraComponent implements OnInit {
 
+  @ViewChild('stream') videoRef: ElementRef;
+  @ViewChild('snapshot') canvasRef: ElementRef;
   @Output() capture = new EventEmitter();
 
-  video;
-  amountOfCameras = 0;
+  video: HTMLVideoElement;
+  canvas: HTMLCanvasElement;
 
-  savedStream: any;
   viewingSnapshot: boolean = false;
 
   constructor() { }
@@ -23,8 +24,6 @@ export class CameraComponent implements OnInit {
   }
 
   public initCamera(): void {
-    this.clearSnapshot();
-
     DetectRTC.load(() => {
       // Check if camera feature is supported
       if (DetectRTC.isWebRTCSupported == false) {
@@ -33,8 +32,8 @@ export class CameraComponent implements OnInit {
         if (DetectRTC.hasWebcam == false) {
           alert('Please install an external webcam device.');
         } else {
-          this.amountOfCameras = DetectRTC.videoInputDevices.length;
           this.initCameraUI();
+          this.clearSnapshot();
           this.initCameraStream();
         }
       }
@@ -47,13 +46,15 @@ export class CameraComponent implements OnInit {
         "\n getUserMedia Support: " + DetectRTC.isGetUserMediaSupported + 
         "\n isWebRTC Supported:   " + DetectRTC.isWebRTCSupported + 
         "\n WebAudio Supported:   " + DetectRTC.isAudioContextSupported +
-        "\n is Mobile Device:     " + DetectRTC.isMobileDevice
+        "\n is Mobile Device:     " + DetectRTC.isMobileDevice+
+        "\n Total amount of Cameras:     " + DetectRTC.videoInputDevices.length
       );
     });
   }
 
   initCameraUI(): void {
-    this.video = document.getElementById('video');
+    this.video = this.videoRef.nativeElement;
+    this.canvas = this.canvasRef.nativeElement;
   }
 
   initCameraStream() {
@@ -90,29 +91,24 @@ export class CameraComponent implements OnInit {
   }
 
   takeSnapshot(): void {
-    // if you'd like to show the canvas add it to the DOM
-    let canvas = document.querySelector('canvas');
-
-    let width = this.video.videoWidth;
-    let height = this.video.videoHeight;
-
     console.log('VIDEO WIDTH: '+this.video.videoWidth+' VIDEO HEIGHT: '+this.video.videoHeight);
 
-    canvas.width = width;
-    canvas.height = height;
+    this.canvas.width = this.video.videoWidth;
+    this.canvas.height = this.video.videoHeight;
 
-    canvas.getContext('2d').drawImage(this.video, 0, this.video.offsetTop, width, height);
+    this.canvas.getContext('2d').drawImage(this.video, 0, 0, this.video.videoWidth, this.video.videoHeight);
 
     this.viewingSnapshot = true;
-    //this.pausePlayVideo();
+  }
+
+  retakeSnapshot(): void {
+    this.clearSnapshot();
+    this.viewingSnapshot = false;
   }
 
   clearSnapshot(): void {
-    let canvas = document.querySelector('canvas');
-    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-
+    this.canvas.getContext("2d").clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.viewingSnapshot = false;
-    //this.pausePlayVideo();
   }
 
   stopVideo(): void {
@@ -123,23 +119,8 @@ export class CameraComponent implements OnInit {
     }
   }
 
-  pausePlayVideo(): void {
-    this.viewingSnapshot = !this.viewingSnapshot;
-    if (this.savedStream) {
-      this.video.srcObject = this.savedStream;
-      this.video.play();
-      this.savedStream = null;
-    } else {
-      this.video.pause();
-      this.savedStream = this.video.srcObject;
-      this.video.srcObject = null;
-    }
-  }
-
   confirmSnapshot(): void{
-    let container = document.getElementById('vid_container')
-    let overlay = document.getElementById('overlay');
-    let canvasResult = document.createElement('canvas');
+    let canvasResult: HTMLCanvasElement = document.createElement('canvas');
 
     const width = this.video.videoWidth*0.8;
     const height = this.video.videoHeight*0.35;
@@ -149,12 +130,12 @@ export class CameraComponent implements OnInit {
     canvasResult.width = width;
     canvasResult.height = height;
 
-    const left = this.video.videoWidth*0.08;
+    const left = this.video.videoWidth*0.085;
     const top = this.video.videoHeight*0.35;
 
     console.log('LEFT: '+left+' TOP: '+top);
 
-    let imageData = document.querySelector('canvas').getContext("2d").getImageData(left, top, width, height);
+    let imageData = this.canvas.getContext("2d").getImageData(left, top, width, height);
 
     let ctx = canvasResult.getContext("2d");
     ctx.rect(0, 0, width, height);
@@ -164,13 +145,13 @@ export class CameraComponent implements OnInit {
 
     this.stopVideo();
 
-    const getCanvasBlob = (canvas) => {
+    const getCanvasBlob = (canvas: HTMLCanvasElement) => {
       return new Promise(resolve => {
         canvas.toBlob(resolve, 'image/jpeg', 0.8);
       })
     };
 
-    getCanvasBlob(canvasResult).then((blob) => {
+    getCanvasBlob(canvasResult).then((blob: Blob) => {
       console.log('Size: '+blob.size/Math.pow(1024,2)+' mb');
       let blobResult = {
         os: DetectRTC.osName + " " + DetectRTC.osVersion,
@@ -183,7 +164,7 @@ export class CameraComponent implements OnInit {
       // do something with the image blob
       let reader = new FileReader();
       reader.onload = () => {
-        console.log('Blob in Base64 READY TO BE SENT'+reader.result);
+        console.log('Blob in Base64: '+reader.result);
         blobResult.data = reader.result;
         this.capture.emit(blobResult);
       };
