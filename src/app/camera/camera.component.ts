@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 import DetectRTC from 'detectrtc';
 
@@ -8,6 +8,9 @@ import DetectRTC from 'detectrtc';
   styleUrls: ['./camera.component.scss', './camera.scss']
 })
 export class CameraComponent implements OnInit {
+
+  @Output() capture = new EventEmitter();
+
   video;
   amountOfCameras = 0;
 
@@ -20,6 +23,8 @@ export class CameraComponent implements OnInit {
   }
 
   public initCamera(): void {
+    this.clearSnapshot();
+
     DetectRTC.load(() => {
       // Check if camera feature is supported
       if (DetectRTC.isWebRTCSupported == false) {
@@ -97,13 +102,17 @@ export class CameraComponent implements OnInit {
     canvas.height = height;
 
     canvas.getContext('2d').drawImage(this.video, 0, this.video.offsetTop, width, height);
+
+    this.viewingSnapshot = true;
     //this.pausePlayVideo();
   }
 
   clearSnapshot(): void {
     let canvas = document.querySelector('canvas');
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-    this.pausePlayVideo();
+
+    this.viewingSnapshot = false;
+    //this.pausePlayVideo();
   }
 
   stopVideo(): void {
@@ -131,14 +140,6 @@ export class CameraComponent implements OnInit {
     let container = document.getElementById('vid_container')
     let overlay = document.getElementById('overlay');
     let canvasResult = document.createElement('canvas');
-    canvasResult.className = 'dni';
-
-    /* let width = overlay.offsetWidth;
-    let height = overlay.offsetHeight; */
-
-    /* let aspect = this.video.videoHeight / this.video.videoWidth;
-    let width = this.video.videoWidth - 100;   // or use height
-    let height = Math.round(width * aspect); */
 
     const width = this.video.videoWidth*0.8;
     const height = this.video.videoHeight*0.35;
@@ -148,17 +149,12 @@ export class CameraComponent implements OnInit {
     canvasResult.width = width;
     canvasResult.height = height;
 
-    /* let left = 50;
-    let top =  this.video.videoHeight/3; */
-
     const left = this.video.videoWidth*0.08;
     const top = this.video.videoHeight*0.35;
 
     console.log('LEFT: '+left+' TOP: '+top);
 
     let imageData = document.querySelector('canvas').getContext("2d").getImageData(left, top, width, height);
-
-    //canvasResult.getContext('2d').drawImage(this.video, 0, 0, width, height);
 
     let ctx = canvasResult.getContext("2d");
     ctx.rect(0, 0, width, height);
@@ -174,14 +170,22 @@ export class CameraComponent implements OnInit {
       })
     };
 
-    // some API's (like Azure Custom Vision) need a blob with image data
     getCanvasBlob(canvasResult).then((blob) => {
-      console.log('Size: '+blob.size/Math.pow(1024,2));
+      console.log('Size: '+blob.size/Math.pow(1024,2)+' mb');
+      let blobResult = {
+        os: DetectRTC.osName + " " + DetectRTC.osVersion,
+        size: blob.size/Math.pow(1024,2)+' mb',
+        browser: DetectRTC.browser.fullVersion + " " + DetectRTC.browser.name,
+        resolution: DetectRTC.displayResolution,
+        ratio: DetectRTC.displayAspectRatio,
+        data: ''
+      }
       // do something with the image blob
       let reader = new FileReader();
       reader.onload = () => {
         console.log('Blob in Base64 READY TO BE SENT'+reader.result);
-        navigator.clipboard.writeText(reader.result);
+        blobResult.data = reader.result;
+        this.capture.emit(blobResult);
       };
       reader.readAsDataURL(blob); // converts the blob to base64 and calls onload
     });

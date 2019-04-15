@@ -1,16 +1,3 @@
-<!-- <div id="container">
-  <div id="vid_container">
-    <canvas id="canvas"></canvas>
-    <video id="video" autoplay playsinline></video>
-    <div id="video_overlay"></div>
-  </div>
-  <div id="gui_controls">
-    <button mat-button color="accent" (click)="clearCanvas()">RETOMAR</button>
-    <button id="takePhotoButton" class="shot" name="take Photo" type="button" [hidden]="viewingSnapshot"></button>
-    <button mat-button color="accent" (click)="useDNIMedia()">USAR</button>
-  </div>
-</div> -->
-
 <section id="camera-container">
   <section class="camera-stream">
     <div id="overlay"></div>
@@ -18,8 +5,8 @@
     <video id="video" autoplay playsinline></video>
   </section>
   <section class="camera-controls" fxLayout="row" fxLayoutAlign="space-around center">
-    <button mat-button color="accent" (click)="clearSnapshot()">RETOMAR</button>
-    <button type="button" class="snapshot" [hidden]="viewingSnapshot" (click)="takeSnapshot()"></button>
-    <button mat-button color="accent" (click)="confirmSnapshot()">USAR</button>
+    <button mat-button color="accent" *ngIf="viewingSnapshot" (click)="clearSnapshot()">RETOMAR</button>
+    <button type="button" class="snapshot" *ngIf="!viewingSnapshot" (click)="takeSnapshot()"></button>
+    <button mat-button color="accent" *ngIf="viewingSnapshot" (click)="confirmSnapshot()">USAR</button>
   </section>
 </section>

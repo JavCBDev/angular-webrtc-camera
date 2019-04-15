@@ -12,6 +12,8 @@ export class UploadYourDocumentComponent implements OnInit {
   @ViewChild('appCamera') appCamera: CameraComponent;
   hiddenCamera: boolean = true;
 
+  stream;
+
   constructor() { }
 
   ngOnInit() {
@@ -20,6 +22,11 @@ export class UploadYourDocumentComponent implements OnInit {
   openCamera(): void {
     this.appCamera.initCamera();
     this.hiddenCamera = false;
+  }
+
+  loadCaptureStream(stream): void {
+    this.hiddenCamera = true;
+    this.stream = stream;
   }
 
 }
