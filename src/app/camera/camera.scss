@@ -12,7 +12,7 @@
       height: 35%;
       left: 8%;
       top: 24%;
-      border: 4px solid #4ade0c;
+      border: 4px solid #e1e416;
       z-index: 2;
     }
 
@@ -21,6 +21,12 @@
       height: 100%;
       object-fit: cover;
       z-index: 0;
+    }
+
+    #canvas {
+      opacity: 0.75;
+      background: #2b2a2a;
+      clip-path: polygon(0% 0%, 0% 100%, 8% 100%, 8% 30%, 90% 30%, 90% 75%, 8% 75%, 8% 100%, 100% 100%, 100% 0%);
     }
     
   }
