@@ -67,11 +67,7 @@ export class CameraComponent implements OnInit {
 
     let constraints = {
       audio: false,
-      video: {
-        width: { ideal: 4096 },
-        height: { ideal: 2160 },
-        facingMode: 'environment'
-      }
+      video: true
     };
 
     const handleSuccess = (stream) => {
