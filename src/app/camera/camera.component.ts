@@ -67,8 +67,14 @@ export class CameraComponent implements OnInit {
 
     let constraints = {
       audio: false,
-      video: true
+      video: {
+        width: { ideal: 4096 },
+        height: { ideal: 2160 },
+        facingMode: { exact: 'environment' }
+      }
     };
+
+    console.log('video true')
 
     const handleSuccess = (stream) => {
       window['stream'] = stream; // Make stream available to browser console
@@ -127,7 +133,7 @@ export class CameraComponent implements OnInit {
     canvasResult.height = height;
 
     const left = this.video.videoWidth*0.085;
-    const top = this.video.videoHeight*0.35;
+    const top = this.video.videoHeight*0.25;
 
     console.log('LEFT: '+left+' TOP: '+top);
 
