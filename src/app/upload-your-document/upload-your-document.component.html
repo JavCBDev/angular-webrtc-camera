@@ -1,5 +1,6 @@
 <section [hidden]="!hiddenCamera"fxLayout="row" fxLayoutAlign="center center">
   <button mat-raised-button color="primary" (click)="openCamera()">Continuar</button>
+  <input id="capture" type ="file" accept="image/*" capture />
 </section>
 <section *ngIf="stream">
   <h3>OS: {{stream.os}}</h3>
