@@ -68,13 +68,19 @@ export class CameraComponent implements OnInit {
     let constraints = {
       audio: false,
       video: {
-        width: { ideal: 4096 },
-        height: { ideal: 2160 },
+        width: { 
+          min: 1280,
+          max: 3840
+        },
+        height: { 
+          min: 720,
+          max: 2160
+        },
         facingMode: { exact: 'environment' }
       }
     };
 
-    console.log('video true')
+    console.log('video min max')
 
     const handleSuccess = (stream) => {
       window['stream'] = stream; // Make stream available to browser console
