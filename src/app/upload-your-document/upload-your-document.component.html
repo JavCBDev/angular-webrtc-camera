@@ -1,6 +1,10 @@
+<section [hidden]="!hiddenCamera"fxLayout="row" fxLayoutAlign="center  center" style="margin-bottom: 2rem">
+  <mat-slide-toggle (change)="changeApproachType()">{{nativeApproach ? 'Native' : 'WebRTC'}} Camera</mat-slide-toggle>
+</section>
 <section [hidden]="!hiddenCamera"fxLayout="row" fxLayoutAlign="center center">
-  <button mat-raised-button color="primary" (click)="openCamera()">Continuar</button>
-  <input id="capture" type ="file" accept="image/*" capture />
+  <button *ngIf="!nativeApproach" mat-raised-button color="primary" (click)="openCamera()">Take Snapshot</button>
+  <button *ngIf="nativeApproach" mat-raised-button color="primary" (click)="triggerCamera()">Open Native Camera</button>
+  <input type="file" capture="camera" accept="image/*" id="capture" name="cameraInput" (change)="onImageUpdate($event)" style="visibility: hidden;width: 0;height:0"/>
 </section>
 <section *ngIf="stream">
   <h3>OS: {{stream.os}}</h3>
